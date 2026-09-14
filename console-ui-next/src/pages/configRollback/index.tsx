@@ -168,6 +168,9 @@ export default function ConfigRollbackPage() {
     );
   }
 
+  const rollbackDeletesConfig = historyDetail.opType?.trim() === 'I';
+  const rollbackWarning = getRollbackWarning();
+
   return (
     <div className="flex flex-col gap-6">
       {/* Header */}
@@ -179,11 +182,15 @@ export default function ConfigRollbackPage() {
       </div>
 
       {/* Warning */}
-      <div className="flex items-center gap-3 rounded-lg border border-yellow-200 bg-yellow-50 p-4 dark:border-yellow-900 dark:bg-yellow-950">
-        <AlertTriangle className="h-5 w-5 text-yellow-600 dark:text-yellow-400 shrink-0" />
-        <p className="text-sm text-yellow-800 dark:text-yellow-200">
-          {getRollbackWarning()}
-        </p>
+      <div role="alert" className={`flex items-start gap-3 rounded-lg border p-4 ${rollbackDeletesConfig
+        ? 'border-destructive/30 bg-destructive/10 text-destructive'
+        : 'border-yellow-200 bg-yellow-50 text-yellow-800 dark:border-yellow-900 dark:bg-yellow-950 dark:text-yellow-200'}`}>
+        <AlertTriangle className="h-5 w-5 shrink-0" aria-hidden="true" />
+        <div className="space-y-1 text-sm">
+          <p className="font-semibold">{t(rollbackDeletesConfig ? 'history.rollbackDeleteTitle' : 'history.rollbackTitle')}</p>
+          <p>{t('history.rollbackDescription')}</p>
+          <p>{rollbackWarning}</p>
+        </div>
       </div>
 
       {/* Metadata Card */}
@@ -204,7 +211,8 @@ export default function ConfigRollbackPage() {
       {/* Content Card */}
       <Card>
         <CardHeader>
-          <CardTitle>{t('config.content')}</CardTitle>
+          <CardTitle>{t(rollbackDeletesConfig ? 'config.content' : 'history.rollbackTargetContent')}</CardTitle>
+          {rollbackDeletesConfig && <p className="text-sm text-muted-foreground">{t('history.rollbackInsertContentHint')}</p>}
         </CardHeader>
         <CardContent className="p-6 pt-0">
           <MonacoEditor
@@ -221,8 +229,8 @@ export default function ConfigRollbackPage() {
         <Button variant="outline" onClick={handleBack}>
           {t('common.back')}
         </Button>
-        <Button onClick={() => setConfirmOpen(true)}>
-          {t('history.rollback')}
+        <Button variant={rollbackDeletesConfig ? 'destructive' : 'default'} onClick={() => setConfirmOpen(true)}>
+          {t(rollbackDeletesConfig ? 'history.rollbackAndDelete' : 'history.rollback')}
         </Button>
       </div>
 
@@ -230,8 +238,8 @@ export default function ConfigRollbackPage() {
       <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{t('history.rollback')}</DialogTitle>
-            <DialogDescription>{t('history.rollbackConfirm')}</DialogDescription>
+            <DialogTitle>{t(rollbackDeletesConfig ? 'history.rollbackDeleteTitle' : 'history.rollback')}</DialogTitle>
+            <DialogDescription>{t('history.rollbackConfirm')}<span className={`mt-2 block font-medium ${rollbackDeletesConfig ? 'text-destructive' : ''}`}>{rollbackWarning}</span></DialogDescription>
           </DialogHeader>
           <div className="text-sm space-y-1">
             <p>Data ID: <span className="font-medium">{historyDetail.dataId}</span></p>
@@ -241,8 +249,8 @@ export default function ConfigRollbackPage() {
             <Button variant="outline" onClick={() => setConfirmOpen(false)} disabled={rollbackLoading}>
               {t('common.cancel')}
             </Button>
-            <Button onClick={handleRollback} disabled={rollbackLoading}>
-              {rollbackLoading ? t('common.loading') : t('common.confirm')}
+            <Button variant={rollbackDeletesConfig ? 'destructive' : 'default'} onClick={handleRollback} disabled={rollbackLoading}>
+              {rollbackLoading ? t('common.loading') : t(rollbackDeletesConfig ? 'history.rollbackConfirmDelete' : 'history.rollbackConfirmAction')}
             </Button>
           </DialogFooter>
         </DialogContent>
