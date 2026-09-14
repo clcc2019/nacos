@@ -198,6 +198,8 @@ export default function HistoryRollbackPage() {
         <h1 className="text-2xl font-semibold text-foreground">{t('history.title')}</h1>
       </div>
 
+      <p className="text-sm text-muted-foreground">{t('history.rollbackDescription')}</p>
+
       {/* Search Area */}
       <Card className="py-0">
         <CardContent className="py-4">

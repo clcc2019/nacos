@@ -141,6 +141,17 @@ Console owns the browser entry and static asset serving behavior:
 Console guide and announcement content are UI presentation data. They are not
 canonical Core server state and must not be used as domain configuration.
 
+The Next UI Config history list and rollback page must explain that rollback
+restores the state before the selected historical operation, not its resulting
+content. Rolling back an insert deletes the current Config because it did not
+exist before creation; rolling back an update or deletion re-publishes the
+recorded content from before that operation. The rollback page and confirmation
+dialog must describe the applicable outcome. For inserts, both the rollback
+entry and final confirmation must explicitly name deletion and use destructive
+styling. Any displayed creation content must be marked as reference only, not
+the rollback result. These prompts preserve the existing Config operations and
+HTTP contracts.
+
 Lifecycle-managed AI Resource detail pages should share the same status and
 Version presentation primitives. MCP, Skill, and Prompt must not independently
 reimplement enabled/disabled, public/private, latest, draft, reviewing, pending,
